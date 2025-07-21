@@ -10,7 +10,7 @@ function NavBar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         {/* Left - Brand */}
         <Link to="/" className="flex items-center gap-2 text-xl font-bold text-blue-600">
-          <span>StudySpot</span>
+          <span>Hawk-Eye</span>
         </Link>
 
         {/* Center - Nav links */}
@@ -18,8 +18,8 @@ function NavBar() {
           <NavLink to="/" className={navLinkClasses} end>
             Home
           </NavLink>
-          <NavLink to="/dashboard" className={navLinkClasses}>
-            Dashboard
+          <NavLink to="/map" className={navLinkClasses}>
+            Map
           </NavLink>
           <NavLink to="/search" className={navLinkClasses}>
             Search

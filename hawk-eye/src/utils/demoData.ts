@@ -1,10 +1,26 @@
 import type { StudyArea, Seat } from '../types'
 
 function generateSeats(capacity: number): Seat[] {
-  return Array.from({ length: capacity }, (_, idx) => ({
-    id: `S${idx + 1}`,
-    occupied: Math.random() < 0.5,
-  }))
+  const rowsNeeded = Math.ceil(capacity / 6)
+  const seats: Seat[] = []
+
+  for (let r = 0; r < rowsNeeded; r++) {
+    const letter = String.fromCharCode(65 + r) // A, B, C...
+    for (let c = 1; c <= 6 && seats.length < capacity; c++) {
+      seats.push({
+        id: `${letter}${c}`,
+        occupied: Math.random() < 0.5,
+      })
+    }
+  }
+
+  // Shuffle seats to randomize layout for each area
+  for (let i = seats.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[seats[i], seats[j]] = [seats[j], seats[i]]
+  }
+
+  return seats
 }
 
 function computeStats(seats: Seat[]): { seatsOpen: number; occupancyPct: number } {
@@ -19,8 +35,8 @@ export function createInitialStudyAreas(): StudyArea[] {
   const areas: StudyArea[] = [
     {
       id: 'lib-1',
-      name: 'Main Library – Floor 1',
-      building: 'Main Library',
+      name: 'PG1',
+      building: 'CULC',
       capacity: 30,
       seatsOpen: 0,
       occupancyPct: 0,
@@ -28,18 +44,36 @@ export function createInitialStudyAreas(): StudyArea[] {
     },
     {
       id: 'lib-2',
-      name: 'Main Library – Floor 2',
-      building: 'Main Library',
+      name: 'PG2',
+      building: 'CULC',
       capacity: 28,
       seatsOpen: 0,
       occupancyPct: 0,
       lastUpdated: now,
     },
     {
-      id: 'cafe',
-      name: 'Campus Café',
+      id: 'rec-area',
+      name: 'Rec Area',
       building: 'Student Center',
       capacity: 24,
+      seatsOpen: 0,
+      occupancyPct: 0,
+      lastUpdated: now,
+    },
+    {
+      id: 'crosland-6',
+      name: 'Crosland 6',
+      building: 'Crosland',
+      capacity: 26,
+      seatsOpen: 0,
+      occupancyPct: 0,
+      lastUpdated: now,
+    },
+    {
+      id: 'crosland-7',
+      name: 'Crosland 7',
+      building: 'Crosland',
+      capacity: 26,
       seatsOpen: 0,
       occupancyPct: 0,
       lastUpdated: now,
@@ -58,7 +92,9 @@ export function createInitialStudyAreas(): StudyArea[] {
   // attach seats and compute stats
   areas.forEach((area) => {
     const seats = generateSeats(area.capacity)
-    const { seatsOpen, occupancyPct } = computeStats(seats)
+    // assign random occupancy percentage 0–100
+    const occupancyPct = Math.floor(Math.random() * 101)
+    const seatsOpen = Math.round(((100 - occupancyPct) / 100) * area.capacity)
     area.seats = seats
     area.seatsOpen = seatsOpen
     area.occupancyPct = occupancyPct
@@ -70,19 +106,13 @@ export function createInitialStudyAreas(): StudyArea[] {
 export function randomizeOccupancy(area: StudyArea): StudyArea {
   if (!area.seats) return area
 
-  // randomize 10% of seats toggled
-  const seats = area.seats.map((seat) => {
-    if (Math.random() < 0.1) {
-      return { ...seat, occupied: !seat.occupied }
-    }
-    return seat
-  })
-
-  const { seatsOpen, occupancyPct } = computeStats(seats)
+  // generate brand-new random occupancy percentage
+  const occupancyPct = Math.floor(Math.random() * 101)
+  const seatsOpen = Math.round(((100 - occupancyPct) / 100) * area.capacity)
 
   return {
     ...area,
-    seats,
+    seats: area.seats, // keep existing seat IDs
     seatsOpen,
     occupancyPct,
     lastUpdated: new Date().toISOString(),

@@ -50,11 +50,46 @@ function AreaDetail() {
       {/* Seat map */}
       <div
         key={selectedId}
-        className="mb-4 flex flex-wrap gap-1 rounded-lg border border-gray-200 p-4 animate-fadeIn"
+        className="mb-4 rounded-lg border border-gray-200 p-4 animate-fadeIn"
       >
-        {area.seats?.map((seat) => (
-          <Seat key={seat.id} id={seat.id} occupied={seat.occupied} />
-        ))}
+        {(() => {
+          if (!area.seats) return null
+          const rows: Array<ReturnType<typeof Object>>[] = [] // suppress type
+          for (let i = 0; i < area.seats.length; i += 6) {
+            rows.push(area.seats.slice(i, i + 6))
+          }
+
+          return (
+            <div className="flex flex-col items-center gap-3">
+              {/* Top two rows */}
+              {rows.slice(0, 2).map((row, idx) => (
+                <div key={`top-${idx}`} className="flex gap-3">
+                  {row.map((s) => (
+                    <a key={s.id} href={`/seat/${area.id}/${s.id}`} className="block">
+                      <Seat id={s.id} occupied={s.occupied} />
+                    </a>
+                  ))}
+                </div>
+              ))}
+
+              {/* Group table */}
+              <div className="h-12 w-full max-w-md rounded bg-gray-300 flex items-center justify-center text-sm text-gray-700 shadow-inner">
+                Large Group Table
+              </div>
+
+              {/* Bottom rows */}
+              {rows.slice(2).map((row, idx) => (
+                <div key={`bot-${idx}`} className="flex gap-3">
+                  {row.map((s) => (
+                    <a key={s.id} href={`/seat/${area.id}/${s.id}`} className="block">
+                      <Seat id={s.id} occupied={s.occupied} />
+                    </a>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )
+        })()}
       </div>
 
       {/* Legend */}

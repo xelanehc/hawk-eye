@@ -51,7 +51,7 @@ function SearchPage() {
               <th className="px-4 py-3 text-left font-medium text-gray-700">Location</th>
               <th className="px-4 py-3 text-left font-medium text-gray-700">Available/Capacity</th>
               <th className="px-4 py-3 text-left font-medium text-gray-700">Occupancy</th>
-              <th className="px-4 py-3" />
+              
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -64,20 +64,26 @@ function SearchPage() {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <div className="h-2 w-20 overflow-hidden rounded-full bg-gray-200">
-                      <div
-                        className="h-full bg-blue-600"
-                        style={{ width: `${area.occupancyPct}%` }}
-                      />
-                    </div>
+                    {(() => {
+                      const barColor =
+                        area.occupancyPct <= 50
+                          ? 'bg-green-500'
+                          : area.occupancyPct < 75
+                            ? 'bg-orange-400'
+                            : 'bg-red-500'
+                      return (
+                        <div className="h-2 w-20 overflow-hidden rounded-full bg-gray-200">
+                          <div
+                            className={`h-full ${barColor}`}
+                            style={{ width: `${area.occupancyPct}%` }}
+                          />
+                        </div>
+                      )
+                    })()}
                     <span>{area.occupancyPct}%</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-right">
-                  <a href={`/area/${area.id}`} className="text-blue-600 hover:underline">
-                    Details
-                  </a>
-                </td>
+                
               </tr>
             ))}
           </tbody>
